@@ -1,0 +1,524 @@
+<Sysmon schemaversion="4.81">
+
+	<HashAlgorithms>md5,sha256,IMPHASH</HashAlgorithms>
+	
+	<EventFiltering>
+
+	<!--SYSMON EVENT ID 1 : PROCESS CREATION [ProcessCreate]-->
+	<RuleGroup name="" groupRelation="or">
+		<ProcessCreate onmatch="exclude">	
+			<Image condition="is">/usr/bin/ps</Image>
+		</ProcessCreate>
+	</RuleGroup>
+
+	<!--SYSMON EVENT ID 2 : FILE CREATION TIME RETROACTIVELY CHANGED IN THE FILESYSTEM [FileCreateTime]-->
+	<RuleGroup name="" groupRelation="or">
+		<FileCreateTime onmatch="include">
+			<Image condition="begin with">/etc</Image> <!--Look for timestomping privileged space-->
+		</FileCreateTime>
+	</RuleGroup>
+
+
+	<!--SYSMON EVENT ID 3 : NETWORK CONNECTION INITIATED [NetworkConnect]-->
+	<RuleGroup name="" groupRelation="or">
+		<NetworkConnect onmatch="exclude">
+			<DestinationIp condition="is">127.0.0.1</DestinationIp>
+			<DestinationIp condition="begin with">fe80:0:0:0</DestinationIp>
+		</NetworkConnect>
+	</RuleGroup>
+
+	<!--SYSMON EVENT ID 4 : RESERVED FOR SYSMON SERVICE STATUS MESSAGES-->
+
+		<!--DATA: UtcTime, State, Version, SchemaVersion-->
+		<!--Cannot be filtered.-->
+
+	<!--SYSMON EVENT ID 5 : PROCESS ENDED [ProcessTerminate]-->
+		<!--DATA: UtcTime, ProcessGuid, ProcessId, Image-->
+	<RuleGroup name="" groupRelation="or">
+		<ProcessTerminate onmatch="include">
+			<!--NOTE: Using exclude with no rules means everything will be logged-->
+			<!--NOTE: Using include with no rules means nothing will be logged-->
+		</ProcessTerminate>
+	</RuleGroup>
+
+
+	<!--SYSMON EVENT ID 6 : DRIVER LOADED INTO KERNEL [DriverLoad]-->
+	<RuleGroup name="" groupRelation="or">
+		<DriverLoad onmatch="include">
+			<!--NOTE: Using exclude with no rules means everything will be logged-->
+			<!--NOTE: Using include with no rules means nothing will be logged-->
+		</DriverLoad>
+	</RuleGroup>
+
+	<!--SYSMON EVENT ID 7 : DLL (IMAGE) LOADED BY PROCESS [ImageLoad]-->
+	<RuleGroup name="" groupRelation="or">
+		<ImageLoad onmatch="include">
+			<!--NOTE: Using exclude with no rules means everything will be logged-->
+			<!--NOTE: Using include with no rules means nothing will be logged-->
+		</ImageLoad>
+	</RuleGroup>
+
+
+	<!--SYSMON EVENT ID 8 : REMOTE THREAD CREATED [CreateRemoteThread]-->
+	<RuleGroup name="" groupRelation="or">
+		<CreateRemoteThread onmatch="exclude">
+			<!--NOTE: Using exclude with no rules means everything will be logged-->
+			<!--NOTE: Using include with no rules means nothing will be logged-->
+		</CreateRemoteThread>
+	</RuleGroup>
+
+	<!--SYSMON EVENT ID 9 : RAW DISK ACCESS [RawAccessRead]-->
+		<!--EVENT 9: "RawAccessRead detected"-->
+		<!--COMMENT:	Can cause high system load, disabled by default.-->
+		<!--COMMENT:	Monitor for raw sector-level access to the disk, often used to bypass access control lists or access locked files.
+			Disabled by default since including even one entry here activates this component. Reward/performance/rule maintenance decision.
+			Encourage you to experiment with this feature yourself. [ https://attack.mitre.org/wiki/Technique/T1067 ] -->
+		<!--COMMENT:	You will likely want to set this to a full capture on domain controllers, where no process should be doing raw reads.-->
+
+		<!--DATA: UtcTime, ProcessGuid, ProcessId, Image, Device-->
+	<RuleGroup name="" groupRelation="or">
+		<RawAccessRead onmatch="include">
+			<!--NOTE: Using exclude with no rules means everything will be logged-->
+			<!--NOTE: Using include with no rules means nothing will be logged-->
+		</RawAccessRead>
+	</RuleGroup>
+
+	<!--SYSMON EVENT ID 10 : INTER-PROCESS ACCESS [ProcessAccess]-->
+		<!--EVENT 10: "Process accessed"-->
+		<!--COMMENT:	Can cause high system load, disabled by default.-->
+		<!--COMMENT:	Monitor for processes accessing other process' memory.-->
+
+		<!--DATA: UtcTime, SourceProcessGuid, SourceProcessId, SourceThreadId, SourceImage, TargetProcessGuid, TargetProcessId, TargetImage, GrantedAccess, CallTrace-->
+	<RuleGroup name="" groupRelation="or">
+		<ProcessAccess onmatch="include">
+			<!--NOTE: Using exclude with no rules means everything will be logged-->
+			<!--NOTE: Using include with no rules means nothing will be logged-->
+		</ProcessAccess>
+	</RuleGroup>
+
+	<!--SYSMON EVENT ID 11 : FILE CREATED [FileCreate]-->
+		<!--EVENT 11: "File created"-->
+	<RuleGroup name="" groupRelation="or">
+		<FileCreate onmatch="include">
+			<TargetFilename condition="contains">/etc/passwd</TargetFilename>
+			<TargetFilename condition="contains">Downloads</TargetFilename>
+			<TargetFilename condition="contains">Temp\7z</TargetFilename>
+			<TargetFilename condition="contains">home</TargetFilename>
+			<TargetFilename condition="begin with">/tmp</TargetFilename>
+			<TargetFilename condition="begin with">bin</TargetFilename>
+			<TargetFilename condition="end with">.sh</TargetFilename> 
+			<TargetFilename condition="end with">.aspx</TargetFilename> 
+			<TargetFilename condition="end with">.jsp</TargetFilename> 
+			<TargetFilename condition="end with">.jse</TargetFilename> 
+			<TargetFilename condition="end with">.doc</TargetFilename>
+			<TargetFilename condition="end with">.pdf</TargetFilename>
+			<TargetFilename condition="end with">.jpg</TargetFilename>
+			<TargetFilename condition="end with">.png</TargetFilename>
+			<TargetFilename condition="end with">.py</TargetFilename> 
+			<TargetFilename condition="end with">.war</TargetFilename> 
+			<TargetFilename condition="end with">.jar</TargetFilename> 
+			<TargetFilename condition="end with">.asp</TargetFilename> 
+			<TargetFilename condition="end with">.vbs</TargetFilename> 
+			<TargetFilename condition="end with">.wsc</TargetFilename>
+			<TargetFilename condition="end with">.wsf</TargetFilename> 
+		</FileCreate>
+	</RuleGroup>
+	<RuleGroup name="" groupRelation="or">
+		<FileCreate onmatch="exclude">
+			<TargetFilename condition="contains">.mozilla/firefox</TargetFilename>
+			<TargetFilename condition="contains">.cache</TargetFilename>
+			<TargetFilename condition="end with">.tmp</TargetFilename> 
+		</FileCreate>
+	</RuleGroup>
+
+
+	<!--SYSMON EVENT ID 12 & 13 & 14 : REGISTRY MODIFICATION [RegistryEvent]-->
+		<!--EVENT 12: "Registry object added or deleted"-->
+		<!--EVENT 13: "Registry value set"-->
+		<!--EVENT 14: "Registry objected renamed"-->
+
+	<RuleGroup name="" groupRelation="or">
+		<RegistryEvent onmatch="include">
+			<!--NOTE: Using exclude with no rules means everything will be logged-->
+			<!--NOTE: Using include with no rules means nothing will be logged-->
+		</RegistryEvent>
+	</RuleGroup>
+
+	<!--SYSMON EVENT ID 15 : ALTERNATE DATA STREAM CREATED [FileCreateStreamHash]-->
+		<!--EVENT 15: "File stream created"-->
+		<RuleGroup name="" groupRelation="or">
+		<FileCreateStreamHash onmatch="include">
+			<TargetFilename condition="contains">Downloads</TargetFilename>
+			<TargetFilename condition="contains">Temp\7z</TargetFilename>
+			<TargetFilename condition="contains">home</TargetFilename>
+			<TargetFilename condition="begin with">/tmp</TargetFilename>
+			<TargetFilename condition="begin with">bin</TargetFilename>
+			<TargetFilename condition="end with">.sh</TargetFilename> 
+			<TargetFilename condition="end with">.aspx</TargetFilename> 
+			<TargetFilename condition="end with">.jsp</TargetFilename> 
+			<TargetFilename condition="end with">.jse</TargetFilename> 
+			<TargetFilename condition="end with">.doc</TargetFilename>
+			<TargetFilename condition="end with">.pdf</TargetFilename>
+			<TargetFilename condition="end with">.jpg</TargetFilename>
+			<TargetFilename condition="end with">.png</TargetFilename>
+			<TargetFilename condition="end with">.py</TargetFilename> 
+			<TargetFilename condition="end with">.war</TargetFilename> 
+			<TargetFilename condition="end with">.jar</TargetFilename> 
+			<TargetFilename condition="end with">.asp</TargetFilename> 
+			<TargetFilename condition="end with">.vbs</TargetFilename> 
+			<TargetFilename condition="end with">.wsc</TargetFilename>
+			<TargetFilename condition="end with">.wsf</TargetFilename>
+			<TargetFilename condition="end with">.iso</TargetFilename> 
+		</FileCreateStreamHash>
+	</RuleGroup>
+
+	<!--SYSMON EVENT ID 16 : SYSMON CONFIGURATION CHANGE-->
+		<!--EVENT 16: "Sysmon config state changed"-->
+		<!--COMMENT:	This ONLY logs if the hash of the configuration changes. Running "sysmon.exe -c" with the current configuration will not be logged with Event 16-->
+
+		<!--DATA: UtcTime, Configuration, ConfigurationFileHash-->
+		<!--Cannot be filtered.-->
+
+	<!--SYSMON EVENT ID 17 & 18 : PIPE CREATED / PIPE CONNECTED [PipeEvent]-->
+		<!--EVENT 17: "Pipe Created"-->
+		<!--EVENT 18: "Pipe Connected"-->
+
+		<RuleGroup name="" groupRelation="or">
+			<PipeEvent onmatch="include">
+			<!--NOTE: Using exclude with no rules means everything will be logged-->
+			<!--NOTE: Using include with no rules means nothing will be logged-->
+			</PipeEvent>
+		</RuleGroup>
+
+	<!--SYSMON EVENT ID 19 & 20 & 21 : WMI EVENT MONITORING [WmiEvent]-->
+		<!--EVENT 19: "WmiEventFilter activity detected"-->
+		<!--EVENT 20: "WmiEventConsumer activity detected"-->
+		<!--EVENT 21: "WmiEventConsumerToFilter activity detected"-->
+
+		<!--ADDITIONAL REFERENCE: [ https://www.darkoperator.com/blog/2017/10/15/sysinternals-sysmon-610-tracking-of-permanent-wmi-events ] -->
+		<!--ADDITIONAL REFERENCE: [ https://rawsec.lu/blog/posts/2017/Sep/19/sysmon-v610-vs-wmi-persistence/ ] -->
+
+		<!--DATA: EventType, UtcTime, Operation, User, Name, Type, Destination, Consumer, Filter-->
+	<RuleGroup name="" groupRelation="or">
+		<WmiEvent onmatch="include">
+			<!--NOTE: Using exclude with no rules means everything will be logged-->
+			<!--NOTE: Using include with no rules means nothing will be logged-->
+		</WmiEvent>
+	</RuleGroup>
+
+	<!--SYSMON EVENT ID 22 : DNS QUERY [DnsQuery]-->
+		<!--EVENT 22: "Dns query"-->
+
+		<!--NOTE:	Due to the volume of events that DNS queries generate, some orgs may want to remove this section from their configuration to reduce Sysmon log turnover. -->
+
+		<!--COMMENT:	DNS logging is a very nuanced challenge in monitoring due to event volume. Legitimate domains can be used to host malware/C2, but lookup itself is not very informative.
+						It's fine to exclude monitoring these bulk low-value lookups, but at same time, you would not have a full log of how malware communicated, potentially missing C2.
+						This section of Sysmon configuration will require your full judgement and knowledge of your org's priorities. There is no correct answer.-->
+
+		<!--OPERATIONS:	Chrome and Firefox prefetch DNS lookups, or use alternate DNS lookup methods Sysmon won't capture. You need to turn these off.
+						Search for Group Policy for these browsers to configure this.-->
+
+		<!--OPERATIONS:	Most DNS traffic is web advertising. To significantly reduce DNS queries and malware ads, enable client-side advertising filtering via Group Policy. This is easy.
+				Internet Explorer: https://decentsecurity.com/adblocking-for-internet-explorer-deployment/
+				Chrome: https://decentsecurity.com/ublock-for-google-chrome-deployment/
+				Firefox: ToDo
+						Also note, this configuration is designed for United States computers. Your country's users will may need customization to reduce noise.
+			-->
+
+		<!--CONFIG:	DNS poisoning is an issue during threat investigations. Try to only exclude ROUTINE system-level queries you know are strongly validated with HTTPS or code signing.-->
+		<!--CONFIG:	If you exclude microsoft.com, someone could register malware-microsoft.com and it wouldn't be logged. Use "END WITH" with leading . or "IS" operators.-->
+		<!--CONFIG:	Be very specific in exclusions. Threat actors use legitimate services, too. Dont exclude all of AWS or Azure or Google or CDNs!-->
+		<!--CONFIG: Popularity data: [ http://s3-us-west-1.amazonaws.com/umbrella-static/index.html ] [ https://better.fyi/trackers/alexa-top-500-news/ ] -->
+
+		<!--CRITICAL:	Do NOT exclude "wpad" lookups. This is a MitM vector routinely used by attackers. Disable WPAD or enforce client-side DNSSEC for AD domain lookups.-->
+		<!--CRITICAL:	Do NOT exclude IPv6 lookups.-->
+
+		<!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, QueryName, QueryType, QueryStatus, QueryResults (can't filter on)-->
+
+		<!--BELOW: These domains should not be excluded at the top level. Be specific if you want to reduce noise under them.-->
+		<!-- Rejected: .cloudapp.net, customer content [ https://blogs.technet.microsoft.com/ptsblog/2012/06/18/security-consideration-when-using-cloudapp-net-domain-as-production-environment-in-windows-azure/ ] -->
+		<!-- Rejected: .googleapis.com, customer content [ https://www.zdnet.com/article/this-business-email-scam-spreads-trojans-through-google-cloud-storage/ ] -->
+		<!-- Rejected: .cloudfront.net, customer content -->
+		<!-- Rejected: .windows.net, customer content -->
+		<!-- Rejected: *github.com, customer content, including open-source malware components -->
+
+	<RuleGroup name="" groupRelation="or">
+		<DnsQuery onmatch="exclude">
+			<!--Network noise-->
+			<QueryName condition="end with">.arpa.</QueryName> <!--Design decision to not log reverse DNS lookups. You will need to decide.-->
+			<QueryName condition="end with">.arpa</QueryName> <!--Design decision to not log reverse DNS lookups. You will need to decide.-->
+			<QueryName condition="end with">.msftncsi.com</QueryName> <!--Microsoft proxy detection | Microsoft default exclusion-->
+			<QueryName condition="is">..localmachine</QueryName>
+			<QueryName condition="is">localhost</QueryName>
+			<!--Microsoft-->
+			<QueryName condition="end with">-pushp.svc.ms</QueryName> <!--Microsoft: Doesn't appear to host customer content or subdomains-->
+			<QueryName condition="end with">.b-msedge.net</QueryName> <!--Microsoft: Doesn't appear to host customer content or subdomains-->
+			<QueryName condition="end with">.bing.com</QueryName> <!-- Microsoft | Microsoft default exclusion -->
+			<QueryName condition="end with">.hotmail.com</QueryName> <!--Microsoft | Microsoft default exclusion-->
+			<QueryName condition="end with">.live.com</QueryName> <!--Microsoft | Microsoft default exclusion-->
+			<QueryName condition="end with">.live.net</QueryName> <!--Microsoft | Microsoft default exclusion-->
+			<QueryName condition="end with">.s-microsoft.com</QueryName> <!--Microsoft-->
+			<QueryName condition="end with">.microsoft.com</QueryName> <!--Microsoft | Microsoft default exclusion-->
+			<QueryName condition="end with">.microsoftonline.com</QueryName> <!--Microsoft | Microsoft default exclusion-->
+			<QueryName condition="end with">.microsoftstore.com</QueryName> <!--Microsoft | Microsoft default exclusion-->
+			<QueryName condition="end with">.ms-acdc.office.com</QueryName> <!--Microsoft: Doesn't appear to host customer content or subdomains-->
+			<QueryName condition="end with">.msedge.net</QueryName> <!--Microsoft: Doesn't appear to host customer content or subdomains-->
+			<QueryName condition="end with">.msn.com</QueryName> <!--Microsoft | Microsoft default exclusion-->
+			<QueryName condition="end with">.msocdn.com</QueryName> <!--Microsoft-->
+			<QueryName condition="end with">.skype.com</QueryName> <!--Microsoft | Microsoft default exclusion-->
+			<QueryName condition="end with">.skype.net</QueryName> <!--Microsoft | Microsoft default exclusion-->
+			<QueryName condition="end with">.windows.com</QueryName> <!--Microsoft-->
+			<QueryName condition="end with">.windows.net.nsatc.net</QueryName> <!--Microsoft-->
+			<QueryName condition="end with">.windowsupdate.com</QueryName> <!--Microsoft-->
+			<QueryName condition="end with">.xboxlive.com</QueryName> <!--Microsoft-->
+			<QueryName condition="is">login.windows.net</QueryName> <!--Microsoft-->
+			<Image condition="begin with">C:\ProgramData\Microsoft\Windows Defender\Platform\</Image> <!--Microsoft: https://docs.microsoft.com/en-us/windows/security/threat-protection/microsoft-defender-atp/network-protection -->
+			<!--Microsoft:Office365/AzureAD-->
+			<QueryName condition="end with">.activedirectory.windowsazure.com</QueryName> <!--Microsoft: AzureAD-->
+			<QueryName condition="end with">.aria.microsoft.com</QueryName> <!--Microsoft: OneDrive/SharePoint-->
+			<QueryName condition="end with">.msauth.net</QueryName>
+			<QueryName condition="end with">.msftauth.net</QueryName>
+			<QueryName condition="end with">.office.net</QueryName> <!--Microsoft: Office-->
+			<QueryName condition="end with">.opinsights.azure.com</QueryName> <!--Microsoft: AzureAD/InTune client event monitoring-->
+			<QueryName condition="end with">.res.office365.com</QueryName> <!--Microsoft: Office-->
+			<QueryName condition="is">acdc-direct.office.com</QueryName> <!--Microsoft: Office-->
+			<QueryName condition="is">atm-fp-direct.office.com</QueryName> <!--Microsoft: Office-->
+			<QueryName condition="is">loki.delve.office.com</QueryName> <!--Microsoft: Office-->
+			<QueryName condition="is">management.azure.com</QueryName> <!--Microsoft: AzureAD/InTune-->
+			<QueryName condition="is">messaging.office.com</QueryName> <!--Microsoft: Office-->
+			<QueryName condition="is">outlook.office365.com</QueryName> <!--Microsoft: Protected by HSTS-->
+			<QueryName condition="is">portal.azure.com</QueryName> <!--Microsoft: AzureAD/InTune-->
+			<QueryName condition="is">protection.outlook.com</QueryName> <!--Microsoft: Office-->
+			<QueryName condition="is">substrate.office.com</QueryName> <!--Microsoft: Office-->
+			<QueryName condition="end with">.measure.office.com</QueryName> <!--Microsoft: Office-->
+			<!--3rd-party applications-->
+			<QueryName condition="end with">.adobe.com</QueryName> <!--Adobe-->
+			<QueryName condition="end with">.adobe.io</QueryName> <!--Adobe-->
+			<QueryName condition="end with">.mozaws.net</QueryName> <!--Mozilla-->
+			<QueryName condition="end with">.mozilla.com</QueryName> <!--Mozilla-->
+			<QueryName condition="end with">.mozilla.net</QueryName> <!--Mozilla-->
+			<QueryName condition="end with">.mozilla.org</QueryName> <!--Mozilla-->
+			<QueryName condition="end with">.spotify.com</QueryName> <!--Spotify-->
+			<QueryName condition="end with">.spotify.map.fastly.net</QueryName> <!--Spotify-->
+			<QueryName condition="end with">.wbx2.com</QueryName> <!--Webex-->
+			<QueryName condition="end with">.webex.com</QueryName> <!--Webex-->
+			<QueryName condition="is">clients1.google.com</QueryName> <!--Google-->
+			<QueryName condition="is">clients2.google.com</QueryName> <!--Google-->
+			<QueryName condition="is">clients3.google.com</QueryName> <!--Google-->
+			<QueryName condition="is">clients4.google.com</QueryName> <!--Google-->
+			<QueryName condition="is">clients5.google.com</QueryName> <!--Google-->
+			<QueryName condition="is">clients6.google.com</QueryName> <!--Google-->
+			<QueryName condition="is">safebrowsing.googleapis.com</QueryName> <!--Google-->
+			<!--Goodlist CDN-->
+			<QueryName condition="end with">.akadns.net</QueryName> <!--AkamaiCDN, extensively used by Microsoft | Microsoft default exclusion-->
+			<QueryName condition="end with">.netflix.com</QueryName>
+			<QueryName condition="end with">aspnetcdn.com</QueryName> <!--Microsoft [ https://docs.microsoft.com/en-us/aspnet/ajax/cdn/overview ]-->
+			<QueryName condition="is">ajax.googleapis.com</QueryName>
+			<QueryName condition="is">cdnjs.cloudflare.com</QueryName> <!--Cloudflare: Hosts popular javascript libraries-->
+			<QueryName condition="is">fonts.googleapis.com</QueryName> <!--Google fonts-->
+			<QueryName condition="end with">.typekit.net</QueryName> <!--Adobe fonts-->
+			<QueryName condition="is">cdnjs.cloudflare.com</QueryName>
+			<QueryName condition="end with">.stackassets.com</QueryName> <!--Stack Overflow-->
+			<QueryName condition="end with">.steamcontent.com</QueryName>
+			<QueryName condition="is">play.google.com</QueryName>
+			<QueryName condition="is">content-autofill.googleapis.com</QueryName>
+			<!--Web resources-->
+			<QueryName condition="end with">.disqus.com</QueryName> <!--Microsoft default exclusion-->
+			<QueryName condition="end with">.fontawesome.com</QueryName>
+			<QueryName condition="is">disqus.com</QueryName> <!--Microsoft default exclusion-->
+			<!--Ads-->
+			<QueryName condition="end with">.1rx.io</QueryName> <!--Ads-->
+			<QueryName condition="end with">.2mdn.net</QueryName> <!--Ads: Google | Microsoft default exclusion-->
+			<QueryName condition="end with">.3lift.com</QueryName> <!--Ads-->
+			<QueryName condition="end with">.adadvisor.net</QueryName> <!--Ads: Neustar [ https://better.fyi/trackers/adadvisor.net/ ] -->
+			<QueryName condition="end with">.adap.tv</QueryName> <!--Ads:AOL | Microsoft default exclusion [ https://www.crunchbase.com/organization/adap-tv ] -->
+			<QueryName condition="end with">.addthis.com</QueryName> <!--Ads:Oracle | Microsoft default exclusion [ https://en.wikipedia.org/wiki/AddThis ] -->
+			<QueryName condition="end with">.adform.net</QueryName> <!--Ads-->
+			<QueryName condition="end with">.adnxs.com</QueryName> <!--Ads: AppNexus | Microsoft default exclusion-->
+			<QueryName condition="end with">.adroll.com</QueryName> <!--Ads-->
+			<QueryName condition="end with">.adrta.com</QueryName> <!--Ads-->
+			<QueryName condition="end with">.adsafeprotected.com</QueryName> <!--Ads-->
+			<QueryName condition="end with">.adsrvr.org</QueryName> <!--Ads-->
+			<QueryName condition="end with">.adsymptotic.com</QueryName> <!--Ads-->
+			<QueryName condition="end with">.advertising.com</QueryName> <!--Ads | Microsoft default exclusion-->
+			<QueryName condition="end with">.agkn.com</QueryName> <!--Ads | [ https://www.home.neustar/privacy ] -->
+			<QueryName condition="end with">.amazon-adsystem.com</QueryName> <!--Ads-->
+			<QueryName condition="end with">.amazon-adsystem.com</QueryName> <!--Ads-->
+			<QueryName condition="end with">.analytics.yahoo.com</QueryName> <!--Ads:Yahoo-->
+			<QueryName condition="end with">.aol.com</QueryName> <!--Ads | Microsoft default exclusion -->
+			<QueryName condition="end with">.betrad.com</QueryName> <!--Ads | Microsoft default exclusion-->
+			<QueryName condition="end with">.bidswitch.net</QueryName> <!--Ads-->
+			<QueryName condition="end with">.casalemedia.com</QueryName> <!--Ads | Microsoft default exclusion-->
+			<QueryName condition="end with">.chartbeat.net</QueryName> <!--Ads | Microsoft default exclusion [ https://better.fyi/trackers/chartbeat.com/ ]-->
+			<QueryName condition="end with">.cnn.com</QueryName> <!-- Microsoft default exclusion-->
+			<QueryName condition="end with">.convertro.com</QueryName> <!--Ads:Verizon-->
+			<QueryName condition="end with">.criteo.com</QueryName> <!--Ads [ https://better.fyi/trackers/criteo.com/ ] -->
+			<QueryName condition="end with">.criteo.net</QueryName> <!--Ads [ https://better.fyi/trackers/criteo.com/ ] -->
+			<QueryName condition="end with">.crwdcntrl.net</QueryName> <!--Ads: Lotame [ https://better.fyi/trackers/crwdcntrl.net/ ] -->
+			<QueryName condition="end with">.demdex.net</QueryName> <!--Ads | Microsoft default exclusion-->
+			<QueryName condition="end with">.domdex.com</QueryName>
+			<QueryName condition="end with">.dotomi.com</QueryName> <!--Ads | Microsoft default exclusion-->
+			<QueryName condition="end with">.doubleclick.net</QueryName> <!--Ads:Conversant | Microsoft default exclusion [ https://www.crunchbase.com/organization/dotomi ] -->
+			<QueryName condition="end with">.doubleverify.com</QueryName> <!--Ads: Google-->
+			<QueryName condition="end with">.emxdgt.com</QueryName> <!--Ads: EMX-->
+			<QueryName condition="end with">.everesttech.net</QueryName> <!--Ads | [ https://better.fyi/trackers/everesttech.net/ ] -->
+			<QueryName condition="end with">.exelator.com</QueryName> <!--Ads:Nielson Marketing Cloud-->
+			<QueryName condition="end with">.google-analytics.com</QueryName> <!--Ads:Google | Microsoft default exclusion-->
+			<QueryName condition="end with">.googleadservices.com</QueryName> <!--Google-->
+			<QueryName condition="end with">.googlesyndication.com</QueryName> <!--Ads:Google, sometimes called during malicious ads, but not directly responsible | Microsoft default exclusion [ https://www.hackread.com/wp-content/uploads/2018/06/Bitdefender-Whitepaper-Zacinlo.pdf ]-->
+			<QueryName condition="end with">.googletagmanager.com</QueryName> <!--Google-->
+			<QueryName condition="end with">.googlevideo.com</QueryName> <!--Google | Microsoft default exclusion-->
+			<QueryName condition="end with">.gstatic.com</QueryName> <!--Google | Microsoft default exclusion-->
+			<QueryName condition="end with">.gvt1.com</QueryName> <!--Google-->
+			<QueryName condition="end with">.gvt2.com</QueryName> <!--Google-->
+			<QueryName condition="end with">.ib-ibi.com</QueryName> <!--Ads: Offerpath [ https://better.fyi/trackers/ib-ibi.com/ ] -->
+			<QueryName condition="end with">.jivox.com</QueryName> <!--Ads-->
+			<QueryName condition="end with">.krxd.net</QueryName> <!--Ads-->
+			<QueryName condition="end with">.lijit.com</QueryName> <!--Ads-->
+			<QueryName condition="end with">.mathtag.com</QueryName> <!--Microsoft default exclusion-->
+			<QueryName condition="end with">.moatads.com</QueryName> <!--Ads | Microsoft default exclusion-->
+			<QueryName condition="end with">.moatpixel.com</QueryName> <!--Ads | Microsoft default exclusion-->
+			<QueryName condition="end with">.mookie1.com</QueryName> <!--Ads-->
+			<QueryName condition="end with">.myvisualiq.net</QueryName> <!--Ads-->
+			<QueryName condition="end with">.netmng.com</QueryName> <!--Ads-->
+			<QueryName condition="end with">.nexac.com</QueryName> <!--Ads | Microsoft default exclusion-->
+			<QueryName condition="end with">.openx.net</QueryName> <!--Ads-->
+			<QueryName condition="end with">.optimizely.com</QueryName> <!--Ads-->
+			<QueryName condition="end with">.outbrain.com</QueryName> <!--Ads-->
+			<QueryName condition="end with">.pardot.com</QueryName> <!--Ads-->
+			<QueryName condition="end with">.phx.gbl</QueryName> <!--Ads | Microsoft default exclusion-->
+			<QueryName condition="end with">.pinterest.com</QueryName> <!--Pinerest-->
+			<QueryName condition="end with">.pubmatic.com</QueryName> <!--Ads | Microsoft default exclusion-->
+			<QueryName condition="end with">.quantcount.com</QueryName>
+			<QueryName condition="end with">.quantserve.com</QueryName>
+			<QueryName condition="end with">.revsci.net</QueryName> <!--Ads:Omniture | Microsoft default exclusion-->
+			<QueryName condition="end with">.rfihub.net</QueryName> <!--Ads | Microsoft default exclusion-->
+			<QueryName condition="end with">.rlcdn.com</QueryName> <!--Ads: Rapleaf [ https://better.fyi/trackers/rlcdn.com/ ] -->
+			<QueryName condition="end with">.rubiconproject.com</QueryName> <!--Ads: Rubicon Project | Microsoft default exclusion [ https://better.fyi/trackers/rubiconproject.com/ ] -->
+			<QueryName condition="end with">.scdn.co</QueryName> <!--Spotify-->
+			<QueryName condition="end with">.scorecardresearch.com</QueryName> <!--Ads: Comscore | Microsoft default exclusion-->
+			<QueryName condition="end with">.serving-sys.com</QueryName> <!--Ads | Microsoft default exclusion-->
+			<QueryName condition="end with">.sharethrough.com</QueryName> <!--Ads-->
+			<QueryName condition="end with">.simpli.fi</QueryName>
+			<QueryName condition="end with">.sitescout.com</QueryName> <!--Ads-->
+			<QueryName condition="end with">.smartadserver.com</QueryName> <!--Ads-->
+			<QueryName condition="end with">.snapads.com</QueryName> <!--Ads-->
+			<QueryName condition="end with">.spotxchange.com</QueryName> <!--Ads-->
+			<QueryName condition="end with">.taboola.com</QueryName> <!--Ads:Taboola-->
+			<QueryName condition="end with">.taboola.map.fastly.net</QueryName> <!--Ads:Taboola-->
+			<QueryName condition="end with">.tapad.com</QueryName>
+			<QueryName condition="end with">.tidaltv.com</QueryName> <!--Ads: Videology [ https://better.fyi/trackers/tidaltv.com/ ] -->
+			<QueryName condition="end with">.trafficmanager.net</QueryName> <!--Ads | Microsoft default exclusion-->
+			<QueryName condition="end with">.tremorhub.com</QueryName> <!--Ads-->
+			<QueryName condition="end with">.tribalfusion.com</QueryName> <!--Ads: Exponential [ https://better.fyi/trackers/tribalfusion.com/ ] -->
+			<QueryName condition="end with">.turn.com</QueryName> <!--Ads | Microsoft default exclusion [ https://better.fyi/trackers/turn.com/ ] -->
+			<QueryName condition="end with">.twimg.com</QueryName> <!--Ads | Microsoft default exclusion-->
+			<QueryName condition="end with">.tynt.com</QueryName> <!--Ads-->
+			<QueryName condition="end with">.w55c.net</QueryName> <!--Ads:dataxu-->
+			<QueryName condition="end with">.ytimg.com</QueryName> <!--Google-->
+			<QueryName condition="end with">.zorosrv.com</QueryName> <!--Ads:Taboola-->
+			<QueryName condition="is">1rx.io</QueryName> <!--Ads-->
+			<QueryName condition="is">adservice.google.com</QueryName> <!--Google-->
+			<QueryName condition="is">ampcid.google.com</QueryName> <!--Google-->
+			<QueryName condition="is">clientservices.googleapis.com</QueryName> <!--Google-->
+			<QueryName condition="is">googleadapis.l.google.com</QueryName> <!--Google-->
+			<QueryName condition="is">imasdk.googleapis.com</QueryName> <!--Google [ https://developers.google.com/interactive-media-ads/docs/sdks/html5/ ] -->
+			<QueryName condition="is">l.google.com</QueryName> <!--Google-->
+			<QueryName condition="is">ml314.com</QueryName> <!--Ads-->
+			<QueryName condition="is">mtalk.google.com</QueryName> <!--Google-->
+			<QueryName condition="is">update.googleapis.com</QueryName> <!--Google-->
+			<QueryName condition="is">www.googletagservices.com</QueryName> <!--Google-->
+			<!--SocialNet-->
+			<QueryName condition="end with">.pscp.tv</QueryName> <!--Twitter:Periscope-->
+			<!--OSCP/CRL Common-->
+			<QueryName condition="end with">.amazontrust.com</QueryName>
+			<QueryName condition="end with">.digicert.com</QueryName>
+			<QueryName condition="end with">.globalsign.com</QueryName>
+			<QueryName condition="end with">.globalsign.net</QueryName>
+			<QueryName condition="end with">.intel.com</QueryName>
+			<QueryName condition="end with">.symcb.com</QueryName> <!--Digicert-->
+			<QueryName condition="end with">.symcd.com</QueryName> <!--Digicert-->
+			<QueryName condition="end with">.thawte.com</QueryName>
+			<QueryName condition="end with">.usertrust.com</QueryName>
+			<QueryName condition="end with">.verisign.com</QueryName>
+			<QueryName condition="end with">ocsp.identrust.com</QueryName>
+			<QueryName condition="end with">pki.goog</QueryName>
+			<QueryName condition="is">msocsp.com</QueryName> <!--Microsoft:OCSP-->
+			<QueryName condition="is">ocsp.comodoca.com</QueryName>
+			<QueryName condition="is">ocsp.entrust.net</QueryName>
+			<QueryName condition="is">ocsp.godaddy.com</QueryName>
+			<QueryName condition="is">ocsp.int-x3.letsencrypt.org</QueryName>
+			<QueryName condition="is">ocsp.msocsp.com</QueryName> <!--Microsoft:OCSP-->
+			<QueryName condition="end with">pki.goog</QueryName>
+			<QueryName condition="is">ocsp.godaddy.com</QueryName>
+			<QueryName condition="end with">amazontrust.com</QueryName>
+			<QueryName condition="is">ocsp.sectigo.com</QueryName>
+			<QueryName condition="is">pki-goog.l.google.com</QueryName>
+			<QueryName condition="end with">.usertrust.com</QueryName>
+			<QueryName condition="is">ocsp.comodoca.com</QueryName>
+			<QueryName condition="is">ocsp.verisign.com</QueryName>
+			<QueryName condition="is">ocsp.entrust.net</QueryName>
+			<QueryName condition="end with">ocsp.identrust.com</QueryName>
+			<QueryName condition="is">status.rapidssl.com</QueryName>
+			<QueryName condition="is">status.thawte.com</QueryName>
+			<QueryName condition="is">ocsp.int-x3.letsencrypt.org</QueryName>
+		</DnsQuery>
+	</RuleGroup>
+
+	<!--SYSMON EVENT ID 23 : FILE DELETE [FileDelete]-->
+		<!--EVENT 22: "File Delete"-->
+		<!--COMMENT:	Sandbox usage. When a program signals to Windows a file should be deleted or wiped, Sysmon may be able to capture it. 
+			[ https://isc.sans.edu/forums/diary/Sysmon+and+File+Deletion/26084/ ]
+		-->
+
+		<!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, User, Image, TargetFilename, Hashes, IsExecutable, Archived -->
+
+	<!--
+	<RuleGroup name="" groupRelation="or">
+		<ClipboardChange onmatch="include">
+		</ClipboardChange>
+	</RuleGroup>
+	-->
+
+	<!--SYSMON EVENT ID 24 : CLIPBOARD EVENT MONITORING [ClipboardChange]-->
+		<!--EVENT 24: "Clipboard changed"-->
+		<!--COMMENT:	Sandbox usage.  Sysmon can capture the contents of clipboard events.
+			An  example of what could be a production usage on restricted desktops is provided below, but it is commented-out. -->
+			
+		<!--DATA: EventType, UtcTime, ProcessGuid, ProcessId, Image, Session, ClientInfo, Hashes, Archived -->
+
+	<!--
+	<RuleGroup name="" groupRelation="or">
+		<ClipboardChange onmatch="include">
+			<Image condition="end with">wscript.exe</Image>
+			<Image condition="end with">cscript.exe</Image>
+			<Image condition="end with">powershell.exe</Image>
+			<Image condition="end with">rdpclip.exe</Image>
+		</ClipboardChange>
+	</RuleGroup>
+	-->
+
+	<!--SYSMON EVENT ID 25 : PROCESS TAMPERING [ProcessTampering]-->
+		<!--EVENT 25: "Process Tampering"-->
+		<!--COMMENT:	This event is generated when a process image is changed from an external source, such as a different process.
+			This may or may not provide value in your environment as it requires tuning and a SIEM to correlate the ProcessGuids.
+			[ https://medium.com/falconforce/sysmon-13-process-tampering-detection-820366138a6c ] -->
+		
+		<!--DATA: EventType, RuleName, UtcTime, ProcessGuid, ProcessId, Image, Type -->
+	
+	<!--
+	<RuleGroup name="" groupRelation="or">
+		<ProcessTampering onmatch="exclude">
+			<Image condition="begin with">C:\Program Files (x86)\Microsoft\Edge\Application\</Image>
+		</ProcessTampering>
+	</RuleGroup>
+	-->
+
+	<!--SYSMON EVENT ID 255 : ERROR-->
+		<!--"This event is generated when an error occurred within Sysmon. They can happen if the system is under heavy load
+			and certain tasked could not be performed or a bug exists in the Sysmon service. You can report any bugs on the
+			Sysinternals forum or over Twitter (@markrussinovich)."-->
+		<!--Cannot be filtered.-->
+
+	</EventFiltering>
+</Sysmon>
