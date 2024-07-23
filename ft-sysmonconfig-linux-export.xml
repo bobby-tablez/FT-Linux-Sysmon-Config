@@ -102,9 +102,12 @@
 		<FileCreate onmatch="include">
 			<TargetFilename condition="contains">/etc/passwd</TargetFilename>
 			<TargetFilename condition="contains">Downloads</TargetFilename>
-			<TargetFilename condition="contains">Temp\7z</TargetFilename>
-			<TargetFilename condition="contains">home</TargetFilename>
+			<TargetFilename condition="begin with">/home</TargetFilename>
+			<TargetFilename condition="begin with">/root</TargetFilename>
 			<TargetFilename condition="begin with">/tmp</TargetFilename>
+			<TargetFilename condition="begin with">/var/tmp</TargetFilename>
+			<TargetFilename condition="begin with">/opt</TargetFilename>
+			<TargetFilename condition="begin with">/vmfs</TargetFilename>
 			<TargetFilename condition="begin with">bin</TargetFilename>
 			<TargetFilename condition="end with">.sh</TargetFilename> 
 			<TargetFilename condition="end with">.aspx</TargetFilename> 
@@ -120,14 +123,21 @@
 			<TargetFilename condition="end with">.asp</TargetFilename> 
 			<TargetFilename condition="end with">.vbs</TargetFilename> 
 			<TargetFilename condition="end with">.wsc</TargetFilename>
-			<TargetFilename condition="end with">.wsf</TargetFilename> 
+			<TargetFilename condition="end with">.wsf</TargetFilename>
 		</FileCreate>
 	</RuleGroup>
 	<RuleGroup name="" groupRelation="or">
 		<FileCreate onmatch="exclude">
-			<TargetFilename condition="contains">.mozilla/firefox</TargetFilename>
+			<Image condition="begin with">/usr/libexec/gvfsd-metadata</Image>
+			<TargetFilename condition="contains">/.local/share/</TargetFilename>
+			<TargetFilename condition="contains">mozilla/firefox</TargetFilename>
 			<TargetFilename condition="contains">.cache</TargetFilename>
-			<TargetFilename condition="end with">.tmp</TargetFilename> 
+			<TargetFilename condition="end with">.tmp</TargetFilename>
+			<TargetFilename condition="end with">.lock</TargetFilename> 
+			<TargetFilename condition="end with">.swp</TargetFilename> 
+			<TargetFilename condition="end with">.log</TargetFilename> 
+			<TargetFilename condition="end with">.nfs</TargetFilename> 
+			<TargetFilename condition="end with">.pid</TargetFilename>  
 		</FileCreate>
 	</RuleGroup>
 
@@ -148,10 +158,14 @@
 		<!--EVENT 15: "File stream created"-->
 		<RuleGroup name="" groupRelation="or">
 		<FileCreateStreamHash onmatch="include">
+			<TargetFilename condition="contains">/etc/passwd</TargetFilename>
 			<TargetFilename condition="contains">Downloads</TargetFilename>
-			<TargetFilename condition="contains">Temp\7z</TargetFilename>
-			<TargetFilename condition="contains">home</TargetFilename>
+			<TargetFilename condition="begin with">/home</TargetFilename>
+			<TargetFilename condition="begin with">/root</TargetFilename>
 			<TargetFilename condition="begin with">/tmp</TargetFilename>
+			<TargetFilename condition="begin with">/var/tmp</TargetFilename>
+			<TargetFilename condition="begin with">/opt</TargetFilename>
+			<TargetFilename condition="begin with">/vmfs</TargetFilename>
 			<TargetFilename condition="begin with">bin</TargetFilename>
 			<TargetFilename condition="end with">.sh</TargetFilename> 
 			<TargetFilename condition="end with">.aspx</TargetFilename> 
@@ -167,8 +181,7 @@
 			<TargetFilename condition="end with">.asp</TargetFilename> 
 			<TargetFilename condition="end with">.vbs</TargetFilename> 
 			<TargetFilename condition="end with">.wsc</TargetFilename>
-			<TargetFilename condition="end with">.wsf</TargetFilename>
-			<TargetFilename condition="end with">.iso</TargetFilename> 
+			<TargetFilename condition="end with">.wsf</TargetFilename> 
 		</FileCreateStreamHash>
 	</RuleGroup>
 
@@ -473,12 +486,51 @@
 
 		<!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, User, Image, TargetFilename, Hashes, IsExecutable, Archived -->
 
-	<!--
+	
 	<RuleGroup name="" groupRelation="or">
-		<ClipboardChange onmatch="include">
-		</ClipboardChange>
+		<FileDelete onmatch="include">
+			<TargetFilename condition="contains">/etc/passwd</TargetFilename>
+			<TargetFilename condition="contains">Downloads</TargetFilename>
+			<TargetFilename condition="begin with">/home</TargetFilename>
+			<TargetFilename condition="begin with">/root</TargetFilename>
+			<TargetFilename condition="begin with">/tmp</TargetFilename>
+			<TargetFilename condition="begin with">/var/tmp</TargetFilename>
+			<TargetFilename condition="begin with">/opt</TargetFilename>
+			<TargetFilename condition="begin with">/vmfs</TargetFilename>
+			<TargetFilename condition="begin with">bin</TargetFilename>
+			<TargetFilename condition="end with">.sh</TargetFilename> 
+			<TargetFilename condition="end with">.aspx</TargetFilename> 
+			<TargetFilename condition="end with">.jsp</TargetFilename> 
+			<TargetFilename condition="end with">.jse</TargetFilename> 
+			<TargetFilename condition="end with">.doc</TargetFilename>
+			<TargetFilename condition="end with">.pdf</TargetFilename>
+			<TargetFilename condition="end with">.jpg</TargetFilename>
+			<TargetFilename condition="end with">.png</TargetFilename>
+			<TargetFilename condition="end with">.py</TargetFilename> 
+			<TargetFilename condition="end with">.war</TargetFilename> 
+			<TargetFilename condition="end with">.jar</TargetFilename> 
+			<TargetFilename condition="end with">.asp</TargetFilename> 
+			<TargetFilename condition="end with">.vbs</TargetFilename> 
+			<TargetFilename condition="end with">.wsc</TargetFilename>
+			<TargetFilename condition="end with">.wsf</TargetFilename> 
+		</FileDelete>
 	</RuleGroup>
-	-->
+	<RuleGroup name="" groupRelation="or">
+		<FileDelete onmatch="exclude">
+			<TargetFilename condition="contains">.cache</TargetFilename>
+			<TargetFilename condition="end with">.tmp</TargetFilename>
+			<TargetFilename condition="end with">.lock</TargetFilename> 
+			<TargetFilename condition="end with">.swp</TargetFilename> 
+			<TargetFilename condition="end with">.log</TargetFilename> 
+			<TargetFilename condition="end with">.nfs</TargetFilename> 
+			<TargetFilename condition="end with">.pid</TargetFilename> 
+			<Image condition="begin with">/usr/libexec/tracker</Image>		 
+			<Image condition="begin with">/usr/lib/firefox/firefox</Image>
+			<Image condition="begin with">/usr/lib/ubuntu-advantage</Image>	
+			<TargetFilename condition="contains">/.local/share/</TargetFilename>		
+		</FileDelete>
+	</RuleGroup>
+	
 
 	<!--SYSMON EVENT ID 24 : CLIPBOARD EVENT MONITORING [ClipboardChange]-->
 		<!--EVENT 24: "Clipboard changed"-->
