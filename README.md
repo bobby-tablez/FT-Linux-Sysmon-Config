@@ -25,6 +25,8 @@ Stage 2 - Discovery
 
 Stage 3 - Execution and Impact
 ![Linux Ransomware Scenario - Ransomware - Red Team](https://github.com/user-attachments/assets/912a3dd2-ed74-4bfc-8a37-73852484abc5)
+
+Ransomware Execution EVID 1
 ![Linux Ransomware Scenario - Ransomware - Blue Team](https://github.com/user-attachments/assets/3a89bbe9-cc51-46f6-94ca-43c69a50d648)
 ![Linux Ransomware Scenario - Ransomware - Blue Team](https://github.com/user-attachments/assets/e715f889-7ccf-40f3-8fc7-784aaa4e7d74)
 
