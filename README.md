@@ -2,9 +2,18 @@
 Sysmon Config for Linux
 
 # Installation of Sysmon For Linux
+https://github.com/Sysinternals/SysmonForLinux/blob/main/INSTALL.md
+
+Once you install Sysmon For Linux a configuration file needs to be added to the start of the sysmon process.
+Assuming you downloaded our config file to /opt on your Linux system:
+```
+sysmon -i /opt/ft-sysmonconfig-linux-export.xml 
+```
 
 # Linux Ransomware Scenario
 In this scenario ssh credentials to an Ubuntu system containing sensitive data were compromised and used by an attacker to transfer a simple .locky encrypter bin to the system and executed.
+
+Detection of this scenario is leveraging the Securonix Unified Defense SIEM Platform with the out of the box Sysmon For Linux parser.
 
 Stage 1 - Initial Access and Tool Transfer
 ![Linux Ransomware Scenario - Wget - Red Team](https://github.com/user-attachments/assets/530c8615-2dec-4efd-bc3e-326f2a70460c)
