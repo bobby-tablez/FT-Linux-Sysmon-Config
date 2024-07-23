@@ -9,6 +9,9 @@ In this scenario ssh credentials to an Ubuntu system containing sensitive data w
 Stage 1 - Initial Access and Tool Transfer
 ![Linux Ransomware Scenario - Wget - Red Team](https://github.com/user-attachments/assets/530c8615-2dec-4efd-bc3e-326f2a70460c)
 
+Tool Transfer Network Connection EVID 3
+![Linux Ransomware Scenario - Wget - Blue Team](https://github.com/user-attachments/assets/f7ef3879-3f77-49c7-b187-b0f5020c0fd3)
+
 Ransomware File Creation EVID 1
 ![Linux Ransomware Scenario - Wget - Blue Team](https://github.com/user-attachments/assets/30cf3d20-373d-47d9-99d3-39738d9d493b)
 
