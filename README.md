@@ -12,7 +12,7 @@ Stage 1 - Initial Access and Tool Transfer
 Tool Transfer Network Connection EVID 3
 ![Linux Ransomware Scenario - Wget - Blue Team](https://github.com/user-attachments/assets/f7ef3879-3f77-49c7-b187-b0f5020c0fd3)
 
-Ransomware File Creation EVID 1
+Tool Transfer Wget Execution EVID 1
 ![Linux Ransomware Scenario - Wget - Blue Team](https://github.com/user-attachments/assets/30cf3d20-373d-47d9-99d3-39738d9d493b)
 
 Ransomware File Creation EVID 11
